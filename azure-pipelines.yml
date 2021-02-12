@@ -7,13 +7,12 @@ trigger:
 - master
 
 pool:
-  vmImage: centos7
+  vmImage: OpenLogic:CentOS:7.5:latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- script: echo Compilar y correr las pruebas unitarias
+  displayName: 'Commit Check'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    echo Correr las pruebas de integración
+  displayName: 'Integration Tests'
