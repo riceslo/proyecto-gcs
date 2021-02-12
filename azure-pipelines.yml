@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: OpenLogic:CentOS:7.5:latest
+  vmImage: CentOS
 
 steps:
 - script: echo Compilar y correr las pruebas unitarias
