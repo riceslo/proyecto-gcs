@@ -9,7 +9,7 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-container: centos7
+container: centos:7
 
 steps:
 - script: echo Compilar y correr las pruebas unitarias
