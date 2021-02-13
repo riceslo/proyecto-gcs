@@ -17,7 +17,7 @@ lazy val gcsApp = (project in file("gcs-app"))
     rpmVendor := "UAGRM",
     rpmGroup := Some("uagrm.edu.bo"),
     rpmUrl := Some("http://uagrm.edu.bo"),
-    rpmLicense := Some("Open Source")
+    rpmLicense := Some("Open Source"),
     scalacOptions ++= Seq(
       "-feature",
       "-deprecation",
