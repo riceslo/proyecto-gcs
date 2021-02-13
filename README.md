@@ -72,6 +72,10 @@ El archivo de configuración se encuentra en la dirección
  
     /etc/gcs-app/application.conf
 
+Los logs se encuentran en:
+
+    /var/log/gcs-app/gcs-app.log
+
 En este archivo se encuentra la configuración para acceder a la base de datos.
 
 # Uso del software instalado en Linux (CentOS)
