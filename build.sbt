@@ -1,6 +1,6 @@
 
 lazy val gcsApp = (project in file("gcs-app"))
-  .enablePlugins(PlayScala)
+  .enablePlugins(PlayScala, RpmPlugin, SystemVPlugin)
   .settings(
     name := """gcs-app""",
     version := "2.8.x",
