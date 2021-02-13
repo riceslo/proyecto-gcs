@@ -60,4 +60,48 @@ Para empaquetar en RPM debemos usar el comando siguiente:
 Para instalar el RPM obtenido solo necesitamos ejecutar el comando siguiente:
 
     $ sudo rpm -i gcs-app-2.8.x-1.noarch.rpm
+
+Luego de instalar tenemos que dar permisos a la aplicación
+ para ejecutarse en el directorio que va a usar:
+
+    $ sudo chown -R gcs-app /usr/share/gcs-app/
+    $ sudo chgrp -R gcs-app /usr/share/gcs-app/
     
+El archivo de configuración se encuentra en la dirección
+ siguiente:
+ 
+    /etc/gcs-app/application.conf
+
+En este archivo se encuentra la configuración para acceder a la base de datos.
+
+# Uso del software instalado en Linux (CentOS)
+
+## Lanzamiento
+
+Podemos lanzar manualmente nuestra aplicación con el comando siguiente
+
+    $ sudo systemctl start gcs-app
+
+## Detener
+
+Para detener el servicio:
+
+    $ sudo systemctl stop gcs-app
+    
+## Reiniciar
+
+Para reiniciar el servicio:
+
+    $ sudo systemctl restart gcs-app
+    
+## Estado
+
+Para ver el estado del servicio:
+
+    $ sudo systemctl status gcs-app
+    
+# Desinstalar en Linux
+
+Cuando se va a instalar una nueva versión, es importante desinstalar la versión anterior (si es que se conserva el número de versión). Para esto, usar el comando siguiente:
+
+    $ sudo rpm -e gcs-app
