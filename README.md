@@ -54,3 +54,10 @@ funcionar.
 Para empaquetar en RPM debemos usar el comando siguiente:
 
     $ sbt rpm:packageBin
+
+# Instalar en Linux (CentOS)
+
+Para instalar el RPM obtenido solo necesitamos ejecutar el comando siguiente:
+
+    $ sudo rpm -i gcs-app-2.8.x-1.noarch.rpm
+    
