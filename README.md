@@ -48,3 +48,9 @@ ejecutamos el comando siguiente:
 
 Esto lanzará los tests de integración, que requieren de la base de datos para
 funcionar.
+
+# Empaquetar
+
+Para empaquetar en RPM debemos usar el comando siguiente:
+
+    $ sbt rpm:packageBin
