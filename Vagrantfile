@@ -10,6 +10,7 @@ yum install -y which
 yum install -y yum-utils
 yum -y install rpm-build
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install -y docker-ce docker-ce-cli containerd.io
 SCRIPT
 
 Vagrant.configure("2") do |config|
