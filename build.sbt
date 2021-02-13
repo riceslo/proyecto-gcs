@@ -12,6 +12,12 @@ lazy val gcsApp = (project in file("gcs-app"))
       "org.postgresql" % "postgresql" % "9.4.1209",
       specs2 % Test,
     ),
+    rpmBrpJavaRepackJars := true,
+    rpmRelease := sys.env.get("BUILD_NUMBER").getOrElse("1"),
+    rpmVendor := "UAGRM",
+    rpmGroup := Some("uagrm.edu.bo"),
+    rpmUrl := Some("http://uagrm.edu.bo"),
+    rpmLicense := Some("Open Source")
     scalacOptions ++= Seq(
       "-feature",
       "-deprecation",
