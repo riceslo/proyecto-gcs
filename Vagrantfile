@@ -19,6 +19,7 @@ Vagrant.configure("2") do |config|
     v.memory = 2048
     v.cpus = 2
     config.vm.provision "shell", inline: $script
+    config.vm.network "forwarded_port", guest: 9000, host: 9000
   end
 end
 
