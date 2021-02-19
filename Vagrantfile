@@ -10,7 +10,7 @@ yum install -y which
 yum install -y yum-utils
 yum -y install rpm-build
 yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo yum install -y docker-ce docker-ce-cli containerd.io
+yum install -y docker-ce docker-ce-cli containerd.io
 SCRIPT
 
 Vagrant.configure("2") do |config|
@@ -20,6 +20,7 @@ Vagrant.configure("2") do |config|
     v.cpus = 2
     config.vm.provision "shell", inline: $script
     config.vm.network "forwarded_port", guest: 9000, host: 9000
+    # config.vm.synced_folder "./", "/home/vagrant/proyecto-gcs"
   end
 end
 
