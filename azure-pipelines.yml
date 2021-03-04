@@ -72,17 +72,16 @@ steps:
   displayName: 'Empaquetando'
   
 - script: 
-    echo  ========== INICIO SCP    
-    mkdir -p ~/.ssh
-    umask  077 ; echo $PIPELINE_SSH_KEY | base64 --decode > ~/.ssh/id_rsa
+    echo  ========== INICIO SCP        
+    umask  077 ; echo $PIPELINE_SSH_KEY | base64 --decode > /home/vsts/id_rsa
     echo $(WEBSERVER-01_KEY)
-    sudo scp -i ~/.ssh/id_rsa /home/vsts/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:/home/azureuser
+    sudo scp -i /home/vsts/id_rsa /home/vsts/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:/home/azureuser
     echo  ========== FIN SCP
   displayName: 'Copiando'
 
 - script: 
     echo  ========== INICIO SSH
     mkdir -p ~/.ssh
-    sudo ssh -tt -i ~/.ssh/id_rsa azureuser@40.87.99.245 <<'EOT'
+    sudo ssh -tt -i /home/vsts/id_rsa azureuser@40.87.99.245 <<'EOT'
     echo  ========== FIN SSH
   displayName: 'SSH'
