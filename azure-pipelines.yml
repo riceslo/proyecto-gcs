@@ -81,6 +81,13 @@ steps:
 
 - script: 
     echo  ========== INICIO SSH    
-    sudo ssh -tt -i /home/vsts/id_rsa azureuser@40.87.99.245 <<'EOT'
+    sudo ssh -tt -i /home/vsts/id_rsa azureuser@40.87.99.245 <<'EOT'    
+    sudo systemctl stop gcs-app
+    sudo rpm -e gcs-app    
+    sudo rpm -i gcs-app-2.8.x-1.noarch.rpm
+    sudo chown -R gcs-app /usr/share/gcs-app/
+    sudo chgrp -R gcs-app /usr/share/gcs-app/
+    sudo systemctl start gcs-app
+    sudo systemctl status gcs-app
     echo  ========== FIN SSH
   displayName: 'SSH'
