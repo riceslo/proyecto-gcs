@@ -10,49 +10,58 @@ pool:
  vmImage: 'Ubuntu-16.04'
 
 steps:
-- script: echo Compilar y correr las pruebas unitarias
-  displayName: 'Commit Check'
 
 - script: |  
-    echo ************* INICIO apt-get update
+    echo ========== INICIO apt-get update 
     sudo apt-get update
-    echo ************* FIN apt-get update
-    echo ************* INICIO apt-get install openjdk-8-jdk
+    echo ========== FIN apt-get update 
+    echo ========== INICIO apt-get install openjdk-8-jdk 
     sudo apt-get install openjdk-8-jdk
     java -version
-    echo ************* FIN apt-get install openjdk-8-jdk
-    echo ************* INICIO Instalacion y Descarga de scala-2.12.10.deb
+    echo ========== FIN apt-get install openjdk-8-jdk
+    echo ========== INICIO Instalacion y Descarga de scala-2.12.10.deb
     wget www.scala-lang.org/files/archive/scala-2.12.10.deb
     sudo dpkg -i scala*.deb
     scala -version
-    echo ************* FIN Instalacion y Descarga de scala-2.12.10.deb
-    echo ************* INICIO Instalacion y Descarga SBT 
+    echo ========== FIN Instalacion y Descarga de scala-2.12.10.deb
+    echo ========== INICIO Instalacion y Descarga SBT 
     echo "deb https://dl.bintray.com/sbt/debian/" | sudo tee -a /etc/apt/sources.list.d/sbt.list
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
     sudo apt-get update
     sudo apt-get install sbt -y
-    echo ************* FIN Instalacion y Descarga SBT 
-    echo ************* INICIO Instalar GIT 
+    echo ========== FIN Instalacion y Descarga SBT 
+    echo ========== INICIO Instalar GIT 
     sudo apt install git
     git -version
-    echo ************* FIN Instalar GIT 
-    echo ************* INICIO Instalar WHICH
+    echo ========== FIN Instalar GIT 
+    echo ========== INICIO Instalar WHICH
     sudo apt install which
-    echo ************* FIN Instalar WHICH
-    echo ************* INICIO YUM-UTILS 
+    echo ========== FIN Instalar WHICH
+    echo ========== INICIO YUM-UTILS 
     sudo apt-get install -y yum-utils
-    echo ************* FIN YUM-UTILS 
-    echo ************* INICIO Instalar Docker 
+    echo ========== FIN YUM-UTILS 
+    echo ========== INICIO Instalar Docker 
     sudo apt-get install docker-ce docker-ce-cli containerd.io
     sudo docker run hello-world
-    echo ************* FIN Instalar Docker 
-    echo ************* INICIO ALIEN 
+    echo ========== FIN Instalar Docker 
+    echo ========== INICIO ALIEN 
     sudo add-apt-repository universe
     sudo apt install alien
-    echo ************* FIN ALIEN 
-    echo ************* Listar repositorio LS
+    echo ========== FIN ALIEN    
+  displayName: 'Instalando Dependencias'
+
+- script: 
+    echo ========== Listar repositorio LS
+    cd proyecto-gcs    
+    echo  ========== INICIO compile
+    sbt compile
+    echo  ========== FIN compile
+  displayName: 'Compilando'
+  
+- script: 
+    sbt rpm:packageBin
+    pwd
     ls
-    echo  ************* INICIO rpm:packageBin
-    sudo sbt rpm:packageBin
-    echo  ************* FIN rpm:packageBin
-  displayName: 'Integration Tests'
+    cp /gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm /home/vsts/gcs-app-2.8.x-1.noarch.rpm
+    ls       
+  displayName: 'Empaquetando'
