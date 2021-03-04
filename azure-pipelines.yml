@@ -52,16 +52,22 @@ steps:
 
 - script: 
     echo ========== Listar repositorio LS
-    cd proyecto-gcs    
+    sudo cd proyecto-gcs    
     echo  ========== INICIO compile
-    sbt compile
+    sudo sbt compile
     echo  ========== FIN compile
   displayName: 'Compilando'
   
 - script: 
-    sbt rpm:packageBin
-    pwd
-    ls
-    cp /gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm /home/vsts/gcs-app-2.8.x-1.noarch.rpm
-    ls       
+   echo  ========== INICIO test
+    sudo sbt test
+    echo  ========== FIN test
+  displayName: 'Pruebas Unitarias'
+  
+  
+- script: 
+    echo  ========== INICIO packageBin
+    sudo sbt rpm:packageBin
+    sudo cp /gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm /home/vsts/gcs-app-2.8.x-1.noarch.rpm
+    echo  ========== FIN packageBin
   displayName: 'Empaquetando'
