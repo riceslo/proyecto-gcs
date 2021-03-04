@@ -89,5 +89,6 @@ steps:
     sudo chgrp -R gcs-app /usr/share/gcs-app/
     sudo systemctl start gcs-app
     sudo systemctl status gcs-app
+    sudo pwd
     echo  ========== FIN SSH
   displayName: 'SSH'
