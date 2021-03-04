@@ -73,6 +73,7 @@ steps:
   
 - script: 
     echo  ========== INICIO SCP    
+    echo $(WEBSERVER-01_KEY)
     sudo scp -v -o StrictHostKeyChecking=no -i webserver-01_key.pem /home/vsts/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:/home/azureuser
     echo  ========== FIN SCP
   displayName: 'Copiando'
