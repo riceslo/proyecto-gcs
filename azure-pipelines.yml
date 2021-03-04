@@ -14,23 +14,45 @@ steps:
   displayName: 'Commit Check'
 
 - script: |  
-    echo Inicio apt-get update
+    echo ************* INICIO apt-get update
     sudo apt-get update
-    echo Inicio apt-get install openjdk-8-jdk
+    echo ************* FIN apt-get update
+    echo ************* INICIO apt-get install openjdk-8-jdk
     sudo apt-get install openjdk-8-jdk
     java -version
-    echo Instalacion y Descarga de scala-2.12.10.deb
+    echo ************* FIN apt-get install openjdk-8-jdk
+    echo ************* INICIO Instalacion y Descarga de scala-2.12.10.deb
     wget www.scala-lang.org/files/archive/scala-2.12.10.deb
     sudo dpkg -i scala*.deb
     scala -version
-    echo Instalacion y Descarga SBT 
+    echo ************* FIN Instalacion y Descarga de scala-2.12.10.deb
+    echo ************* INICIO Instalacion y Descarga SBT 
     echo "deb https://dl.bintray.com/sbt/debian/" | sudo tee -a /etc/apt/sources.list.d/sbt.list
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
     sudo apt-get update
     sudo apt-get install sbt -y
-    echo Instalar GIT 
+    echo ************* FIN Instalacion y Descarga SBT 
+    echo ************* INICIO Instalar GIT 
     sudo apt install git
     git -version
-    echo Correr las pruebas de integración
-
+    echo ************* FIN Instalar GIT 
+    echo ************* INICIO Instalar WHICH
+    sudo apt install which
+    echo ************* FIN Instalar WHICH
+    echo ************* INICIO YUM-UTILS 
+    sudo apt-get install -y yum-utils
+    echo ************* FIN YUM-UTILS 
+    echo ************* INICIO Instalar Docker 
+    sudo apt-get install docker-ce docker-ce-cli containerd.io
+    sudo docker run hello-world
+    echo ************* FIN Instalar Docker 
+    echo ************* INICIO ALIEN 
+    sudo add-apt-repository universe
+    sudo apt install alien
+    echo ************* FIN ALIEN 
+    echo ************* Listar repositorio LS
+    ls
+    echo  ************* INICIO rpm:packageBin
+    sudo sbt rpm:packageBin
+    echo  ************* FIN rpm:packageBin
   displayName: 'Integration Tests'
