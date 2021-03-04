@@ -7,14 +7,30 @@ trigger:
 - master
 
 pool:
-  vmImage: ubuntu-latest
-
-container: centos:7
+ vmImage: 'Ubuntu-16.04'
 
 steps:
 - script: echo Compilar y correr las pruebas unitarias
   displayName: 'Commit Check'
 
-- script: |
+- script: |  
+    echo Inicio apt-get update
+    sudo apt-get update
+    echo Inicio apt-get install openjdk-8-jdk
+    sudo apt-get install openjdk-8-jdk
+    java -version
+    echo Instalacion y Descarga de scala-2.12.10.deb
+    wget www.scala-lang.org/files/archive/scala-2.12.10.deb
+    sudo dpkg -i scala*.deb
+    scala -version
+    echo Instalacion y Descarga SBT 
+    echo "deb https://dl.bintray.com/sbt/debian/" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+    sudo apt-get update
+    sudo apt-get install sbt -y
+    echo Instalar GIT 
+    sudo apt install git
+    git -version
     echo Correr las pruebas de integración
+
   displayName: 'Integration Tests'
