@@ -75,8 +75,6 @@ steps:
     echo  ========== INICIO SCP        
     touch /home/vsts/id_rsa
     $WEBSERVER-01_KEY > /home/vsts/id_rsa
-    #base64 < /home/vsts/id_rsa
-    #sudo (umask  077 ; $WEBSERVER-01_KEY| base64 --decode> /home/vsts/id_rsa
     sudo scp -i /home/vsts/id_rsa /home/vsts/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:/home/azureuser
     echo  ========== FIN SCP
   displayName: 'Copiando'
