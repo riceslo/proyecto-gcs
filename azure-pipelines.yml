@@ -31,11 +31,11 @@ steps:
     sudo apt-get install sbt -y
     echo ========== FIN Instalacion y Descarga SBT 
     echo ========== INICIO Instalar GIT 
-    sudo apt install git
+    sudo apt-get install git
     git -version
     echo ========== FIN Instalar GIT 
     echo ========== INICIO Instalar WHICH
-    sudo apt install which
+    sudo apt-get install which
     echo ========== FIN Instalar WHICH
     echo ========== INICIO YUM-UTILS 
     sudo apt-get install -y yum-utils
@@ -46,7 +46,7 @@ steps:
     echo ========== FIN Instalar Docker 
     echo ========== INICIO ALIEN 
     sudo add-apt-repository universe
-    sudo apt install alien
+    sudo apt-get install alien
     echo ========== FIN ALIEN    
   displayName: 'Instalando Dependencias'
 
@@ -63,11 +63,16 @@ steps:
     sudo sbt test
     echo  ========== FIN test
   displayName: 'Pruebas Unitarias'
-  
-  
+    
 - script: 
     echo  ========== INICIO packageBin
     sudo sbt rpm:packageBin
     sudo cp /gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm /home/vsts/gcs-app-2.8.x-1.noarch.rpm
     echo  ========== FIN packageBin
   displayName: 'Empaquetando'
+  
+- script: 
+    echo  ========== INICIO SCP    
+    sudo scp -v -o StrictHostKeyChecking=no -i webserver-01_key.pem /home/vsts/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:/home/azureuser
+    echo  ========== FIN SCP
+  displayName: 'Copiando'
