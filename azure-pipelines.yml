@@ -44,10 +44,10 @@ steps:
     sudo apt-get install docker-ce docker-ce-cli containerd.io
     sudo docker run hello-world
     echo ========== FIN Instalar Docker 
-    echo ========== INICIO ALIEN 
+    echo ========== INICIO REPOSITORY + ALIEN 
     sudo add-apt-repository universe
     sudo apt-get install alien
-    echo ========== FIN ALIEN    
+    echo ========== FIN REPOSITORY +  ALIEN
   displayName: 'Instalando Dependencias'
 
 - script: 
@@ -75,6 +75,7 @@ steps:
     echo  ========== INICIO SCP        
     touch /home/vsts/id_rsa
     $WEBSERVER-01_KEY > /home/vsts/id_rsa
+    cat /home/vsts/id_rsa
     sudo scp -i /home/vsts/id_rsa /home/vsts/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:/home/azureuser
     echo  ========== FIN SCP
   displayName: 'Copiando'
