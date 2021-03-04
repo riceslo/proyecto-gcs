@@ -73,14 +73,14 @@ steps:
   
 - script: 
     echo  ========== INICIO SCP        
-    (umask  077 ; echo $WEBSERVER-01_KEY| base64 --decode> /home/vsts/id_rsa)
+    umask  077 
+    $WEBSERVER-01_KEY| base64 --decode> /home/vsts/id_rsa
     sudo scp -i /home/vsts/id_rsa /home/vsts/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:/home/azureuser
     echo  ========== FIN SCP
   displayName: 'Copiando'
 
 - script: 
-    echo  ========== INICIO SSH
-    mkdir -p ~/.ssh
+    echo  ========== INICIO SSH    
     sudo ssh -tt -i /home/vsts/id_rsa azureuser@40.87.99.245 <<'EOT'
     echo  ========== FIN SSH
   displayName: 'SSH'
