@@ -26,17 +26,6 @@ steps:
   displayName: 'Instalando Dependencias'
 
 - script:  |
-    echo $(SERVER_KEY) | base64 -di > ~/temp.pem
-    sudo chmod 600 ~/temp.pem
-    cat ~/temp.pem
-    echo 'Hola' > archivo.txt
-    scp -o StrictHostKeyChecking=no -i ~/temp.pem archivo.txt azureuser@40.87.99.245:.
-  displayName: 'Pruebas Hola'
-
-
-
-
-- script:  |
    echo ========== INICIO Compilando
    git clone https://github.com/riceslo/proyecto-gcs.git
    cd proyecto-gcs
@@ -60,6 +49,8 @@ steps:
 
 - script:  |
     echo  ========== INICIO Copiando    
+    echo $(SERVER_KEY) | base64 -di > ~/server_key.pem
+    sudo chmod 600 ~/server_key.pem    
     scp -o StrictHostKeyChecking=no -i ~/server_key.pem $(Agent.BuildDirectory)/s/proyecto-gcs/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
     echo  ========== FIN Copiando
   displayName: 'Copiando'
