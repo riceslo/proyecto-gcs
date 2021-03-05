@@ -12,32 +12,40 @@ pool:
 steps:
 
 - script: |  
-    echo ========== INICIO Instalando Dependencias
-    sudo apt-get -y update
-    sudo apt-get -y install curl 
-    echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
-    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
-    sudo apt-get -y update
-    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-    sudo apt-get -y update
-    sudo apt-get -y install sbt git debianutils rpm ssh
+   echo ========== INICIO Instalando Dependencias
+   sudo apt-get -y update
+   sudo apt-get -y install curl 
+   echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+   sudo apt-get -y update
+   sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+   sudo apt-get -y update
+   sudo apt-get -y install sbt git debianutils rpm ssh
     echo ========== FIN Instalando Dependencias
   displayName: 'Instalando Dependencias'
 
 - script: 
-    echo ========== INICIO Compilando
-    git clone https://github.com/riceslo/proyecto-gcs.git
-    cd proyecto-gcs
-    sbt compile
-    echo  ========== FIN Compilando
+   echo ========== INICIO Compilando
+   git clone https://github.com/riceslo/proyecto-gcs.git
+   cd proyecto-gcs
+   sbt compile
+   echo  ========== FIN Compilando
   displayName: 'Compilando'
   
 - script: 
    echo  ========== INICIO Pruebas Unitarias
-    sudo sbt test
-    echo  ========== FIN Pruebas Unitarias
+   sudo sbt test
+   echo  ========== FIN Pruebas Unitarias
   displayName: 'Pruebas Unitarias'
     
+- script: 
+   echo  ========== INICIO Pruebas Unitarias
+   sudo systemctl start docker
+   sudo docker run -it -e POSTGRES_PASSWORD=gcs -e POSTGRES_USER=gcs -e POSTGRES_DB=gcs -p 127.0.0.1:5432:5432  postgres:9.5 &
+   sbt "project gcsAppIT" test
+   echo  ========== FIN Pruebas Unitarias
+  displayName: 'Pruebas de Integracion'
+  
 - script: 
     echo  ========== INICIO Empaquetando
     sudo sbt rpm:packageBin
@@ -45,11 +53,10 @@ steps:
   displayName: 'Empaquetando'
   
 
-
 - script: 
     echo  ========== INICIO Copiando
     echo $(WEBSEREVER-01_KEY) | base64 -di > ~/server_key.pem
     sudo chmod 600 ~/server_key.pem    
-    scp -o "StrictHostKeyChecking no" -i ~/server_key.pem /home/vsts/work/1/s/proyecto-gcs/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
+    scp -o "StrictHostKeyChecking no" -i ~/server_key.pem $(Agent.BuildDirectory)/s/proyecto-gcs/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
     echo  ========== FIN Copiando
   displayName: 'Copiando'
