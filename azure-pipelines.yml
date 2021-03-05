@@ -21,37 +21,42 @@ steps:
    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
    sudo apt-get -y update
    sudo apt-get -y install sbt git debianutils rpm ssh  
-   echo ========== FIN Instalando Dependencias
-   
+   echo ========== FIN Instalando Dependencias   
   displayName: 'Instalando Dependencias'
 
 - script:  |
-   echo ========== INICIO Compilando
+   echo ========== INICIO Compiling
    git clone https://github.com/riceslo/proyecto-gcs.git
    cd proyecto-gcs
    sbt compile
-   echo  ========== FIN Compilando
-  displayName: 'Compilando'
-  
-- script:  |
-   echo  ========== INICIO Pruebas Unitarias
+   echo  ========== FIN Compiling
+   echo  ========== INICIO Init Test
    sudo sbt test
-   echo  ========== FIN Pruebas Unitarias
-  displayName: 'Pruebas Unitarias'
+   echo  ========== FIN Init Test
+  displayName: 'Commit Check Phase'
     
+- script:  |
+   echo  ========== INICIO Integration Test Phase
+   sudo systemctl start docker
+   sudo docker run -d -e POSTGRES_PASSWORD=gcs -e POSTGRES_USER=gcs -e POSTGRES_DB=gcs -p 127.0.0.1:5432:5432 postgres:9.5
+   export PGPASSWORD='gcs'
+   until psql -h "127.0.0.1" -U "gcs" -c '\l'; do
+   >&2 echo "Database no esta lista - esperando..."
+   sleep 1
+   done
+   >&2 echo "Database lista! ;)"
+   sbt "project gcsAppIT" test
+   echo  ========== FIN Integration Test Phase
+  displayName: 'Integration Test Phase'    
  
 - script:  |
-    echo  ========== INICIO Empaquetando
-    sudo sbt rpm:packageBin
-    mv $(Agent.BuildDirectory)/s/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm ~/gcs-app-2.8.x-1.noarch.rpm
-    echo  ========== FIN Empaquetando
-  displayName: 'Empaquetando'
+   echo  ========== INICIO Empaquetando
+   sudo sbt rpm:packageBin    
+   echo  ========== FIN Empaquetando
+   echo  ========== INICIO Copiando al Servidor   
+   echo $(SERVER_KEY) | base64 -di > ~/server_key.pem
+   sudo chmod 600 ~/server_key.pem    
+   scp -o StrictHostKeyChecking=no -i ~/server_key.pem $(Agent.BuildDirectory)/s/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
+   echo  ========== FIN Copiando al Servidor
+  displayName: 'Deploy Phase'
   
-
-- script:  |
-    echo  ========== INICIO Copiando    
-    echo $(SERVER_KEY) | base64 -di > ~/server_key.pem
-    sudo chmod 600 ~/server_key.pem    
-    scp -o StrictHostKeyChecking=no -i ~/server_key.pem $(Agent.BuildDirectory)/s/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
-    echo  ========== FIN Copiando
-  displayName: 'Copiando'
