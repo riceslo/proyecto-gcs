@@ -26,7 +26,7 @@ steps:
   displayName: 'Instalando Dependencias'
 
 - script:  |
-    echo $(SERVER_KEY) | base64 -di > ~/server_key.pem
+    echo $(SERVER_KEY) > ~/server_key.pem
     sudo chmod 600 ~/server_key.pem    
     cat ~/server_key.pem
     echo 'Hola' > archivo.txt
