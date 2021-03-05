@@ -24,7 +24,7 @@ steps:
    echo $(WEBSEREVER-01_KEY) | base64 -di > ~/server_key.pem
    sudo chmod 600 ~/server_key.pem    
    echo 'Hola' > archivo.txt
-   scp -o "StrictHostKeyChecking no" -i ~/server_key.pem archivo.txt azureuser@40.87.99.245:.
+   scp -o StrictHostKeyChecking=no -i ~/server_key.pem archivo.txt azureuser@40.87.99.245:.
    echo ========== FIN Instalando Dependencias
   displayName: 'Instalando Dependencias'
 
@@ -52,6 +52,6 @@ steps:
 
 - script: 
     echo  ========== INICIO Copiando    
-    scp -o "StrictHostKeyChecking no" -i ~/server_key.pem $(Agent.BuildDirectory)/s/proyecto-gcs/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
+    scp -o StrictHostKeyChecking=no -i ~/server_key.pem $(Agent.BuildDirectory)/s/proyecto-gcs/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
     echo  ========== FIN Copiando
   displayName: 'Copiando'
