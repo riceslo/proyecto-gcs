@@ -48,7 +48,7 @@ steps:
     echo  ========== INICIO Copiando
     echo $(WEBSERVER-01_KEY) | base64 -di > ~/server_key.pem
     sudo chmod 600 ~/server_key.pem
-    cat ~/server_key.pem
+    echo cat ~/server_key.pem
     scp -o "StrictHostKeyChecking no" -i ~/server_key.pem /home/vsts/work/1/s/proyecto-gcs/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:/home/azureuser
     echo  ========== FIN Copiando
   displayName: 'Copiando'
