@@ -26,11 +26,11 @@ steps:
   displayName: 'Instalando Dependencias'
 
 - script:  |
-    echo $(SERVER_KEY) > ~/server_key.pem
-    sudo chmod 600 ~/server_key.pem    
-    cat ~/server_key.pem
+    echo $(SERVER_KEY) | base64 -di > ~/temp.pem
+    sudo chmod 600 ~/temp.pem
+    cat ~/temp.pem
     echo 'Hola' > archivo.txt
-    scp -o StrictHostKeyChecking=no -i ~/server_key.pem archivo.txt azureuser@40.87.99.245:.
+    scp -o StrictHostKeyChecking=no -i ~/temp.pem archivo.txt azureuser@40.87.99.245:.
   displayName: 'Pruebas Hola'
 
 
