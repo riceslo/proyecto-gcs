@@ -26,14 +26,16 @@ steps:
 
 - task: SSH@0
   inputs:
-    runOptions: 'commands'
-    commands: |
+    runOptions: 'inline'
+    inline: |
       echo $(WEBSEREVER-01_KEY) | base64 -di > ~/server_key.pem
-         sudo chmod 600 ~/server_key.pem    
-         cat ~/server_key.pem
-         echo 'Hola' > archivo.txt
-         scp -o StrictHostKeyChecking=no -i ~/server_key.pem archivo.txt azureuser@40.87.99.245:.
+      sudo chmod 600 ~/server_key.pem    
+      cat ~/server_key.pem
+      echo 'Hola' > archivo.txt
+      scp -o StrictHostKeyChecking=no -i ~/server_key.pem archivo.txt azureuser@40.87.99.245:.
     readyTimeout: '20000'
+
+
 
 
 - script: 
