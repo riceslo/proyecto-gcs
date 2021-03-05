@@ -22,23 +22,21 @@ steps:
    sudo apt-get -y update
    sudo apt-get -y install sbt git debianutils rpm ssh  
    echo ========== FIN Instalando Dependencias
+   
   displayName: 'Instalando Dependencias'
 
-- task: SSH@0
-  inputs:
-    runOptions: 'inline'
-    inline: |
-      echo $(WEBSEREVER-01_KEY) | base64 -di > ~/server_key.pem
-      sudo chmod 600 ~/server_key.pem    
-      cat ~/server_key.pem
-      echo 'Hola' > archivo.txt
-      scp -o StrictHostKeyChecking=no -i ~/server_key.pem archivo.txt azureuser@40.87.99.245:.
-    readyTimeout: '20000'
+- script:  |
+    echo $(SERVER_KEY) | base64 -di > ~/server_key.pem
+    sudo chmod 600 ~/server_key.pem    
+    cat ~/server_key.pem
+    echo 'Hola' > archivo.txt
+    scp -o StrictHostKeyChecking=no -i ~/server_key.pem archivo.txt azureuser@40.87.99.245:.
+  displayName: 'Pruebas Hola'
 
 
 
 
-- script: 
+- script:  |
    echo ========== INICIO Compilando
    git clone https://github.com/riceslo/proyecto-gcs.git
    cd proyecto-gcs
@@ -46,21 +44,21 @@ steps:
    echo  ========== FIN Compilando
   displayName: 'Compilando'
   
-- script: 
+- script:  |
    echo  ========== INICIO Pruebas Unitarias
    sudo sbt test
    echo  ========== FIN Pruebas Unitarias
   displayName: 'Pruebas Unitarias'
     
  
-- script: 
+- script:  |
     echo  ========== INICIO Empaquetando
     sudo sbt rpm:packageBin
     echo  ========== FIN Empaquetando
   displayName: 'Empaquetando'
   
 
-- script: 
+- script:  |
     echo  ========== INICIO Copiando    
     scp -o StrictHostKeyChecking=no -i ~/server_key.pem $(Agent.BuildDirectory)/s/proyecto-gcs/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
     echo  ========== FIN Copiando
