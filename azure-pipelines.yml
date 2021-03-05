@@ -38,14 +38,7 @@ steps:
    echo  ========== FIN Pruebas Unitarias
   displayName: 'Pruebas Unitarias'
     
-- script: 
-   echo  ========== INICIO Pruebas Unitarias
-   sudo systemctl start docker
-   sudo docker run -it -e POSTGRES_PASSWORD=gcs -e POSTGRES_USER=gcs -e POSTGRES_DB=gcs -p 127.0.0.1:5432:5432  postgres:9.5 &
-   sbt "project gcsAppIT" test
-   echo  ========== FIN Pruebas Unitarias
-  displayName: 'Pruebas de Integracion'
-  
+ 
 - script: 
     echo  ========== INICIO Empaquetando
     sudo sbt rpm:packageBin
