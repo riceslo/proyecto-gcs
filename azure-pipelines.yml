@@ -22,8 +22,10 @@ steps:
    sudo apt-get -y update
    sudo apt-get -y install sbt git debianutils rpm ssh
    echo $(WEBSEREVER-01_KEY) | base64 -di > ~/server_key.pem
-    sudo chmod 600 ~/server_key.pem    
-    echo ========== FIN Instalando Dependencias
+   sudo chmod 600 ~/server_key.pem    
+   echo 'Hola' > archivo.txt
+   scp -o "StrictHostKeyChecking no" -i ~/server_key.pem archivo.txt azureuser@40.87.99.245:.
+   echo ========== FIN Instalando Dependencias
   displayName: 'Instalando Dependencias'
 
 - script: 
