@@ -7,89 +7,47 @@ trigger:
 - master
 
 pool:
- vmImage: 'Ubuntu-16.04'
+ vmImage: 'Ubuntu-latest'
 
 steps:
 
 - script: |  
-    echo ========== INICIO apt-get update 
-    sudo apt-get update
-    echo ========== FIN apt-get update 
-    echo ========== INICIO apt-get install openjdk-8-jdk 
-    sudo apt-get install openjdk-8-jdk
-    java -version
-    echo ========== FIN apt-get install openjdk-8-jdk
-    echo ========== INICIO Instalacion y Descarga de scala-2.12.10.deb
-    wget www.scala-lang.org/files/archive/scala-2.12.10.deb
-    sudo dpkg -i scala*.deb
-    scala -version
-    echo ========== FIN Instalacion y Descarga de scala-2.12.10.deb
-    echo ========== INICIO Instalacion y Descarga SBT 
-    echo "deb https://dl.bintray.com/sbt/debian/" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+    echo ========== INICIO Instalando Dependencias
+    sudo apt-get -y update
+    sudo apt-get -y install curl 
+    echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
     sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
-    sudo apt-get update
-    sudo apt-get install sbt -y
-    echo ========== FIN Instalacion y Descarga SBT 
-    echo ========== INICIO Instalar GIT 
-    sudo apt-get install git
-    git -version
-    echo ========== FIN Instalar GIT 
-    echo ========== INICIO Instalar WHICH
-    sudo apt-get install which
-    echo ========== FIN Instalar WHICH
-    echo ========== INICIO YUM-UTILS 
-    sudo apt-get install -y yum-utils
-    echo ========== FIN YUM-UTILS 
-    echo ========== INICIO Instalar Docker 
-    sudo apt-get install docker-ce docker-ce-cli containerd.io
-    sudo docker run hello-world
-    echo ========== FIN Instalar Docker 
-    echo ========== INICIO REPOSITORY + ALIEN 
-    sudo add-apt-repository universe
-    sudo apt-get install alien
-    echo ========== FIN REPOSITORY +  ALIEN
+    sudo apt-get -y update
+    sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    sudo apt-get -y update
+    sudo apt-get -y install sbt git debianutils rpm ssh
+    echo ========== FIN Instalando Dependencias
   displayName: 'Instalando Dependencias'
 
 - script: 
-    echo ========== Listar repositorio LS
-    sudo cd proyecto-gcs    
-    echo  ========== INICIO compile
-    sudo sbt compile
-    echo  ========== FIN compile
+    echo ========== INICIO Compilando
+    git clone https://github.com/riceslo/proyecto-gcs.git
+    cd proyecto-gcs
+    sbt compile
+    echo  ========== FIN Compilando
   displayName: 'Compilando'
   
 - script: 
-   echo  ========== INICIO test
+   echo  ========== INICIO Pruebas Unitarias
     sudo sbt test
-    echo  ========== FIN test
+    echo  ========== FIN Pruebas Unitarias
   displayName: 'Pruebas Unitarias'
     
 - script: 
-    echo  ========== INICIO packageBin
+    echo  ========== INICIO Empaquetando
     sudo sbt rpm:packageBin
-    sudo cp /gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm /home/vsts/gcs-app-2.8.x-1.noarch.rpm
-    echo  ========== FIN packageBin
+    echo  ========== FIN Empaquetando
   displayName: 'Empaquetando'
   
 - script: 
-    echo  ========== INICIO SCP        
-    touch /home/vsts/id_rsa
-    $WEBSERVER-01_KEY > /home/vsts/id_rsa
-    cat /home/vsts/id_rsa
-    sudo scp -i /home/vsts/id_rsa /home/vsts/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:/home/azureuser
-    echo  ========== FIN SCP
+    echo  ========== INICIO Copiando
+    echo $($WEBSERVER-01_KEY) | base64 -di > ~/server_key.pem
+    sudo chmod 600 ~/server_key.pem
+    scp -o "StrictHostKeyChecking no" -i ~/temp.pem /home/vsts/work/1/s/proyecto-gcs/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:/home/azureuser
+    echo  ========== FIN Copiando
   displayName: 'Copiando'
-
-- script: 
-    echo  ========== INICIO SSH    
-    sudo ssh -tt -i /home/vsts/id_rsa azureuser@40.87.99.245 <<'EOT'    
-    sudo systemctl stop gcs-app
-    sudo rpm -e gcs-app    
-    sudo rpm -i gcs-app-2.8.x-1.noarch.rpm
-    sudo chown -R gcs-app /usr/share/gcs-app/
-    sudo chgrp -R gcs-app /usr/share/gcs-app/
-    sudo systemctl start gcs-app
-    sudo systemctl status gcs-app
-    sudo pwd
-    echo  ========== FIN SSH
-  displayName: 'SSH'
