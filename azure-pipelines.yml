@@ -17,55 +17,64 @@ steps:
     jdkArchitectureOption: 'x64'
     jdkSourceOption: 'PreInstalled'
 
-- script: |  
-   echo ========== Starting: Instaling dependency ==========
-   sudo apt-get -y update
-   sudo apt-get -y install curl 
-   echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
-   sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
-   sudo apt-get -y update
-   sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-   sudo apt-get -y update
-   sudo apt-get -y install sbt git debianutils rpm ssh  
-   echo ========== Finishing: Instaling dependency ==========
-  displayName: 'Instaling dependency'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo ========== Starting: Instaling dependency ==========
+      sudo apt-get -y update
+      sudo apt-get -y install curl 
+      echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+      sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+      sudo apt-get -y update
+      sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      sudo apt-get -y update
+      sudo apt-get -y install sbt git debianutils rpm ssh  
+      echo ========== Finishing: Instaling dependency ==========
 
-- script:  |
-   echo ========== Starting: Compiling ==========
-   git clone https://github.com/riceslo/proyecto-gcs.git
-   cd proyecto-gcs
-   sbt compile
-   echo  ========== Finishing: Compiling
-   echo  ========== Starting: Init Test
-   sudo sbt test
-   echo  ========== Finishing: Init Test
-  displayName: 'Commit Check Phase'
-    
-- script:  |
-   echo  ========== Starting: Integration Test Phase
-   sudo systemctl start docker
-   sudo docker run -d -e POSTGRES_PASSWORD=gcs -e POSTGRES_USER=gcs -e POSTGRES_DB=gcs -p 127.0.0.1:5432:5432 postgres:9.5
-   export PGPASSWORD='gcs'
-   until psql -h "127.0.0.1" -U "gcs" -c '\l'; do
-   >&2 echo "Database no esta lista - esperando..."
-   sleep 1
-   done
-   >&2 echo "Database lista! ;)"
-   sbt "project gcsAppIT" test
-   echo  ========== Finishing: Integration Test Phase
-  displayName: 'Integration Test Phase'    
- 
-- script:  |
-   echo  ========== Starting: Empaquetando
-   sudo sbt rpm:packageBin    
-   echo  ========== Finishing: Empaquetando
-   echo  ========== Starting: Copiando al Servidor   
-   echo $(SERVER_KEY) | base64 -di > ~/server_key.pem
-   sudo chmod 600 ~/server_key.pem    
-   scp -o StrictHostKeyChecking=no -i ~/server_key.pem $(Agent.BuildDirectory)/s/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
-   echo  ========== Finishing: Copiando al Servidor   
-   ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo rpm -e gcs-app"   
-   ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo dnf install -y ~/gcs-app-2.8.x-1.noarch.rpm"
-   ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo chown -R gcs-app /usr/share/gcs-app/"
-   ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo chgrp -R gcs-app /usr/share/gcs-app/"   
-  displayName: 'Deploy Phase'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo ========== Starting: Compiling ==========
+      git clone https://github.com/riceslo/proyecto-gcs.git
+      cd proyecto-gcs
+      sbt compile
+      echo  ========== Finishing: Compiling
+      echo  ========== Starting: Init Test
+      sudo sbt test
+      echo  ========== Finishing: Init Test
+
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo  ========== Starting: Integration Test Phase
+      sudo systemctl start docker
+      sudo docker run -d -e POSTGRES_PASSWORD=gcs -e POSTGRES_USER=gcs -e POSTGRES_DB=gcs -p 127.0.0.1:5432:5432 postgres:9.5
+      export PGPASSWORD='gcs'
+      until psql -h "127.0.0.1" -U "gcs" -c '\l'; do
+      >&2 echo "Database no esta lista - esperando..."
+      sleep 1
+      done
+      >&2 echo "Database lista! ;)"
+      sbt "project gcsAppIT" test
+      echo  ========== Finishing: Integration Test Phaset
+
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo  ========== Starting: Empaquetando
+      sudo sbt rpm:packageBin    
+      echo  ========== Finishing: Empaquetando
+      echo  ========== Starting: Copiando al Servidor   
+      echo $(SERVER_KEY) | base64 -di > ~/server_key.pem
+      sudo chmod 600 ~/server_key.pem    
+      scp -o StrictHostKeyChecking=no -i ~/server_key.pem $(Agent.BuildDirectory)/s/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
+      echo  ========== Finishing: Copiando al Servidor   
+      ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo rpm -e gcs-app"   
+      ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo dnf install -y ~/gcs-app-2.8.x-1.noarch.rpm"
+      ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo chown -R gcs-app /usr/share/gcs-app/"
+      ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo chgrp -R gcs-app /usr/share/gcs-app/"   
