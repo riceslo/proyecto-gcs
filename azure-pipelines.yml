@@ -66,4 +66,6 @@ steps:
    echo  ========== Finishing: Copiando al Servidor   
    ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo rpm -e gcs-app"   
    ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo dnf install -y ~/gcs-app-2.8.x-1.noarch.rpm"
+   ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo chown -R gcs-app /usr/share/gcs-app/"
+   ssh -o StrictHostKeyChecking=no -i ~/server_key.pem azureuser@40.87.99.245  "sudo chgrp -R gcs-app /usr/share/gcs-app/"   
   displayName: 'Deploy Phase'
