@@ -63,9 +63,7 @@ steps:
    echo $(SERVER_KEY) | base64 -di > ~/server_key.pem
    sudo chmod 600 ~/server_key.pem    
    scp -o StrictHostKeyChecking=no -i ~/server_key.pem $(Agent.BuildDirectory)/s/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
-   echo  ========== Finishing: Copiando al Servidor
-#ssh -o StrictHostKeyChecking=no azureuser@40.87.99.245 "sudo systemctl stop gcs-app.service"   
-#   ssh -o StrictHostKeyChecking=no azureuser@40.87.99.245 "sudo rpm -e gcs-app"
-#   scp -o StrictHostKeyChecking=no ~/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
-#   ssh -o StrictHostKeyChecking=no azureuser@40.87.99.245 "sudo dnf install -y ~/gcs-app-2.8.x-1.noarch.rpm"
+   echo  ========== Finishing: Copiando al Servidor   
+   ssh -o StrictHostKeyChecking=no azureuser@40.87.99.245 "sudo rpm -e gcs-app"   
+   ssh -o StrictHostKeyChecking=no azureuser@40.87.99.245 "sudo dnf install -y ~/gcs-app-2.8.x-1.noarch.rpm"
   displayName: 'Deploy Phase'
