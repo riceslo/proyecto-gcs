@@ -11,6 +11,12 @@ pool:
 
 steps:
 
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: '8'
+    jdkArchitectureOption: 'x64'
+    jdkSourceOption: 'PreInstalled'
+
 - script: |  
    echo ========== Starting: Instaling dependency ==========
    sudo apt-get -y update
@@ -58,9 +64,8 @@ steps:
    sudo chmod 600 ~/server_key.pem    
    scp -o StrictHostKeyChecking=no -i ~/server_key.pem $(Agent.BuildDirectory)/s/gcs-app/target/rpm/RPMS/noarch/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
    echo  ========== Finishing: Copiando al Servidor
-   ssh -o StrictHostKeyChecking=no azureuser@$(WEBSERVER_PUBLIC_IP) "sudo sed -i '/dbserver/d' /etc/hosts"
-   ssh -o StrictHostKeyChecking=no azureuser@$(WEBSERVER_PUBLIC_IP) "sudo bash -c \"echo '$(DATABASE_LOCAL_IP)    dbserver' >> /etc/hosts\""
-   ssh -o StrictHostKeyChecking=no azureuser@$(WEBSERVER_PUBLIC_IP) "sudo rpm -e gcs-app"
-   scp -o StrictHostKeyChecking=no ~/gcs-app-2.8.x-1.noarch.rpm azureuser@$(WEBSERVER_PUBLIC_IP):.
-   ssh -o StrictHostKeyChecking=no azureuser@$(WEBSERVER_PUBLIC_IP) "sudo dnf install -y ~/gcs-app-2.8.x-1.noarch.rpm"
+#ssh -o StrictHostKeyChecking=no azureuser@40.87.99.245 "sudo systemctl stop gcs-app.service"   
+#   ssh -o StrictHostKeyChecking=no azureuser@40.87.99.245 "sudo rpm -e gcs-app"
+#   scp -o StrictHostKeyChecking=no ~/gcs-app-2.8.x-1.noarch.rpm azureuser@40.87.99.245:.
+#   ssh -o StrictHostKeyChecking=no azureuser@40.87.99.245 "sudo dnf install -y ~/gcs-app-2.8.x-1.noarch.rpm"
   displayName: 'Deploy Phase'
